@@ -1,10 +1,10 @@
-bm-bookstack-install (installation automatisée de BookStack)
+bm-bookstack-install (installation auto. de BookStack)
 ===
 
 > english version below
 
 ### Description
-Ce script automatise l'installation de BookStack (https://www.bookstackapp.com/), uniquement pour Centos 8 (à vos risques et périls).
+Ce script automatise l'installation de [BookStack](https://www.bookstackapp.com), uniquement pour Centos 8 (à vos risques et périls).
 
 Validé sur :
 
@@ -89,7 +89,7 @@ LDAP_REMOVE_FROM_GROUPS=false
 ### English version
 
 ### [EN] Description
-This script automates the installation of BookStack (https://www.bookstackapp.com/), only for Debian (at your own risk).
+This script automates the installation of [BookStack](https://www.bookstackapp.com), only for Debian (at your own risk).
 
 Tested on :
 
