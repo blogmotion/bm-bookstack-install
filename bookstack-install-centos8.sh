@@ -7,12 +7,13 @@
 # Adapted from : https://deviant.engineer/2017/02/bookstack-centos7/
 #
 #set -xe
-VERSION="2020.02.09"
+VERSION="2020.04.01"
 
 ### VARIABLES #######################################################################################################################
 VARWWW="/var/www"
 BOOKSTACK_DIR="${VARWWW}/BookStack"
 TMPROOTPWD="/tmp/DB_ROOT.delete"
+REMIRPM="http://rpms.remirepo.net/enterprise/8/remi/x86_64/remi-release-8.1-2.el8.remi.noarch.rpm"
 #CURRENT_IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 CURRENT_IP=$(hostname -i)
 blanc="\033[1;37m"; gris="\033[0;37m"; magenta="\033[0;35m"; rouge="\033[1;31m"; vert="\033[1;32m"; jaune="\033[1;33m"; bleu="\033[1;34m"; rescolor="\033[0m"
@@ -43,7 +44,13 @@ yum -y install epel-release # (Extra Packages for Enterprise Linux)
 yum -y install git mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
 
 # Add REMI repo
-yum install -y http://rpms.remirepo.net/enterprise/8/remi/x86_64/remi-release-8.0-4.el8.remi.noarch.rpm
+yum install -y $REMIRPM
+if [[ $? -ne 0 ]]; then
+        echo -e "\t ${rouge} ERROR on Remi RPM, please check RPM URL : $REMIRPM ${rescolor}"
+        echo -e "\t ${gris} script aborted, please restart after fix it ${rescolor}"
+		exit 1
+fi
+
 dnf --enablerepo=remi install -y php72-php-tidy php72-php-json
 
 # create symlink tidy.so and enable extension in php.ini
@@ -207,7 +214,7 @@ chmod -R 755 bootstrap/cache public/uploads storage
 echo -e "\n\n"
 echo -e "\t * 1 * ${vert}PLEASE NOTE the MariaDB password root:${DB_ROOT} ${rescolor}"
 echo -e "\t * 2 * ${rouge}AND DELETE the file ${TMPROOTPWD} ${rescolor}"
-echo -e "\t * 3 * ${bleu} Finally, login on http://${HOSTNAME} or http://${CURRENT_IP} -> admin@admin.com:password ${rescolor}"
+echo -e "\t * 3 * ${bleu}Logon http://${HOSTNAME} or http://${CURRENT_IP} -> admin@admin.com:password ${rescolor}"
 echo -e "\n\t${magenta} --- END OF SCRIPT (v${VERSION}) ---  \n\n\n ${rescolor}"
 
 exit 0
