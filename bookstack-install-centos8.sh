@@ -1,7 +1,7 @@
 #!/bin/bash
 # bm-bookstack-install : Installation de BookStack pour Centos 8.x
 # License : Creative Commons http://creativecommons.org/licenses/by-nd/4.0/deed.fr
-# Website : http://blogmotion.fr 
+# Website : http://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255
 #
 # BookStack : https://www.bookstackapp.com/
 # Adapted from : https://deviant.engineer/2017/02/bookstack-centos7/
