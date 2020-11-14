@@ -25,7 +25,7 @@ echo -e "#########################################################"
 echo -e "#                                                       #"
 echo -e "#                BookStack Installation                 #"
 echo -e "#                                                       #"
-echo -e "#              Tested on Centos 8.1 (x64)               #"
+echo -e "#            Tested on Centos 8.1, 8.2 (x64)            #"
 echo -e "#                      by @xhark                        #"
 echo -e "#                                                       #"
 echo -e "###################### ${VERSION} #######################"
@@ -41,7 +41,7 @@ firewall-cmd --add-service=http --permanent && firewall-cmd --add-service=https 
 echo -e "\n${jaune}Packages installation ...${rescolor}" && sleep 1
 yum -y update
 yum -y install epel-release # (Extra Packages for Enterprise Linux)
-yum -y install git mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
+yum -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
 
 # Add REMI repo
 yum install -y $REMIRPM
@@ -51,7 +51,7 @@ if [[ $? -ne 0 ]]; then
 		exit 1
 fi
 
-dnf --enablerepo=remi install -y php72-php-tidy php72-php-json
+dnf --enablerepo=remi install -y php72-php-tidy php72-php-json php72-php-pecl-zip
 
 # create symlink tidy.so and enable extension in php.ini
 ln -s /opt/remi/php72/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
