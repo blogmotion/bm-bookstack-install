@@ -15,7 +15,7 @@ Validé sur :
 
 ### 🚀 Utilisation
 En tant que root (ou via sudo) :
-```chmod +x bm-bookstack-centos.sh && ./bm-bookstack-centos.sh```
+```chmod +x bm-bookstack-centos8.sh && ./bm-bookstack-centos8.sh```
 
 ### LDAP avec Active Directory
 Extrait de fichier `.env`
