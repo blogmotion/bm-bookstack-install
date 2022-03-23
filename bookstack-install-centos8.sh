@@ -13,7 +13,7 @@ VERSION="2020.04.01"
 VARWWW="/var/www"
 BOOKSTACK_DIR="${VARWWW}/BookStack"
 TMPROOTPWD="/tmp/DB_ROOT.delete"
-REMIRPM="http://rpms.remirepo.net/enterprise/8/remi/x86_64/remi-release-8.1-2.el8.remi.noarch.rpm"
+REMIRPM="https://rpms.remirepo.net/enterprise/remi-release-8.rpm"
 #CURRENT_IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 CURRENT_IP=$(hostname -i)
 blanc="\033[1;37m"; gris="\033[0;37m"; magenta="\033[0;35m"; rouge="\033[1;31m"; vert="\033[1;32m"; jaune="\033[1;33m"; bleu="\033[1;34m"; rescolor="\033[0m"
@@ -39,22 +39,24 @@ firewall-cmd --add-service=http --permanent && firewall-cmd --add-service=https 
 
 ### PACKAGES INSTALLATION ##########################################################################################################
 echo -e "\n${jaune}Packages installation ...${rescolor}" && sleep 1
-yum -y update
-yum -y install epel-release # (Extra Packages for Enterprise Linux)
-yum -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
 
 # Add REMI repo
 yum install -y $REMIRPM
+
 if [[ $? -ne 0 ]]; then
         echo -e "\t ${rouge} ERROR on Remi RPM, please check RPM URL : $REMIRPM ${rescolor}"
         echo -e "\t ${gris} script aborted, please restart after fix it ${rescolor}"
 		exit 1
 fi
+yum -y update
+yum -y install epel-release # (Extra Packages for Enterprise Linux)
+yum module enable -y php:remi-7.4
+yum -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
+dnf --enablerepo=remi install -y php74-php-tidy php74-php-json php74-php-pecl-zip
 
-dnf --enablerepo=remi install -y php72-php-tidy php72-php-json php72-php-pecl-zip
 
 # create symlink tidy.so and enable extension in php.ini
-ln -s /opt/remi/php72/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
+ln -s /opt/remi/php74/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
 echo "extension=tidy" >> /etc/php.ini
 
 
