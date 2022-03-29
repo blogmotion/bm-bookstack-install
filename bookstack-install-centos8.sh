@@ -1,6 +1,7 @@
 #!/bin/bash
 # bm-bookstack-install : BookStack Installation script for CentOS 8.x (DEPRECATED)
-# DEPRECATED : CentOS 8 is dead ! Please use bookstack-install-RHEL.sh instead (works on Alma and Oracle Linux)
+# DEPRECATED : CentOS 8 is dead ! 
+#              Please use https://github.com/blogmotion/bm-bookstack-install/blob/master/bookstack-install-RHEL.sh 
 #
 # License : Creative Commons http://creativecommons.org/licenses/by-nd/4.0/deed.fr
 # Website : https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255

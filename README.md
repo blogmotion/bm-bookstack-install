@@ -4,18 +4,19 @@ bm-bookstack-install (installation auto. de BookStack)
 > english version below
 
 ### Description
-Ce script automatise l'installation de [BookStack](https://www.bookstackapp.com), uniquement pour Centos 8 (à vos risques et périls).
+Ce script automatise l'installation de [BookStack](https://www.bookstackapp.com) sur les distributions basées sur RHEL (à vos risques et périls).
 
-Présentation : http://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255
+Présentation : https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255
 
 Validé sur :
 
-- Centos 8.1.1911 (Core, x64)
+- Alma Linux 8.5 (x64)
+- Oracle Linux 8.5 (x64)
 
 
 ### 🚀 Utilisation
 En tant que root (ou via sudo) :
-```chmod +x bm-bookstack-centos8.sh && ./bm-bookstack-centos8.sh```
+```chmod +x bookstack-install-centos8.sh && ./bookstack-install-centos8.sh```
 
 ### LDAP avec Active Directory
 Extrait de fichier `.env`
@@ -91,14 +92,15 @@ LDAP_REMOVE_FROM_GROUPS=false
 ### English version
 
 ### [EN] Description
-This script automates the installation of [BookStack](https://www.bookstackapp.com), only for Debian (at your own risk).
+This script automates the installation of [BookStack](https://www.bookstackapp.com), only for RedHat based distributions (at your own risk).
 
-How to (french): http://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255)
+How to (french): https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255)
 
 Tested on :
 
-- Centos 8.1.1911 (Core, x64)
+- Alma Linux 8.5 (x64)
+- Oracle Linux 8.5 (x64)
 
 ### [EN] 🚀 Usage
 Run as root (or prefix with sudo) :
-```chmod +x bm-bookstack-centos.sh && ./bm-bookstack-centos.sh```
+```chmod +x bookstack-install-centos8.sh && ./bookstack-install-centos8.sh```
