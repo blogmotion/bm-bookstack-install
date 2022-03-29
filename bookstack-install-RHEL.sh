@@ -1,22 +1,22 @@
 #!/bin/bash
-# bm-bookstack-install : BookStack Installation script for CentOS 8.x (DEPRECATED)
-# DEPRECATED : CentOS 8 is dead ! Please use bookstack-install-RHEL.sh instead (works on Alma and Oracle Linux)
-#
+# bm-bookstack-install : Installation de BookStack pour Alma Linux 8.x et Oracle Linux 8.x
 # License : Creative Commons http://creativecommons.org/licenses/by-nd/4.0/deed.fr
 # Website : https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255
 #
 # BookStack : https://www.bookstackapp.com/
 # Adapted from : https://deviant.engineer/2017/02/bookstack-centos7/
-
-VERSION="2021.01.01"
+#
+#set -xe
+VERSION="2022.03.29"
 
 ### VARIABLES #######################################################################################################################
 VARWWW="/var/www"
 BOOKSTACK_DIR="${VARWWW}/BookStack"
 TMPROOTPWD="/tmp/DB_ROOT.delete"
-REMIRPM="http://rpms.remirepo.net/enterprise/8/remi/x86_64/remi-release-8.1-2.el8.remi.noarch.rpm"
+REMIRPM="https://rpms.remirepo.net/enterprise/remi-release-8.rpm"
 #CURRENT_IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 CURRENT_IP=$(hostname -i)
+DOMAIN=$(hostname)
 blanc="\033[1;37m"; gris="\033[0;37m"; magenta="\033[0;35m"; rouge="\033[1;31m"; vert="\033[1;32m"; jaune="\033[1;33m"; bleu="\033[1;34m"; rescolor="\033[0m"
 
 
@@ -26,7 +26,7 @@ echo -e "#########################################################"
 echo -e "#                                                       #"
 echo -e "#                BookStack Installation                 #"
 echo -e "#                                                       #"
-echo -e "#            Tested on Centos 8.1, 8.2 (x64)            #"
+echo -e "#         Tested on Alma, Oracle Linux 8.5 (x64)        #"
 echo -e "#                      by @xhark                        #"
 echo -e "#                                                       #"
 echo -e "###################### ${VERSION} #######################"
@@ -40,22 +40,29 @@ firewall-cmd --add-service=http --permanent && firewall-cmd --add-service=https 
 
 ### PACKAGES INSTALLATION ##########################################################################################################
 echo -e "\n${jaune}Packages installation ...${rescolor}" && sleep 1
-yum -y update
-yum -y install epel-release # (Extra Packages for Enterprise Linux)
-yum -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
+
+dnf -y update
 
 # Add REMI repo
-yum install -y $REMIRPM
+dnf -y install $REMIRPM
+dnf -y module reset php
+dnf -y module enable php:remi-7.4
+
 if [[ $? -ne 0 ]]; then
         echo -e "\t ${rouge} ERROR on Remi RPM, please check RPM URL : $REMIRPM ${rescolor}"
         echo -e "\t ${gris} script aborted, please restart after fix it ${rescolor}"
 		exit 1
 fi
 
-dnf --enablerepo=remi install -y php72-php-tidy php72-php-json php72-php-pecl-zip
+
+
+dnf -y install epel-release # (Extra Packages for Enterprise Linux)
+dnf -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
+
+dnf --enablerepo=remi install -y php74-php-tidy php74-php-json php74-php-pecl-zip
 
 # create symlink tidy.so and enable extension in php.ini
-ln -s /opt/remi/php72/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
+ln -s /opt/remi/php74/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
 echo "extension=tidy" >> /etc/php.ini
 
 
@@ -80,7 +87,7 @@ mysql -e "SET PASSWORD FOR root@localhost = PASSWORD('${DB_ROOT}');FLUSH PRIVILE
 ### PHP-FPM setup ###############################################################################################################
 echo -e "\n${jaune}PHP-FPM configuration ...${rescolor}" && sleep 1
 fpmconf=/etc/php-fpm.d/www.conf
-sed -i "s|^listen =.*$|listen = /var/run/php-fpm.sock|" $fpmconf
+sed -i "s|^listen =.*$|listen = /run/php-fpm.sock|" $fpmconf
 sed -i "s|^;listen.owner =.*$|listen.owner = nginx|" $fpmconf
 sed -i "s|^;listen.group =.*$|listen.group = nginx|" $fpmconf
 sed -i "s|^user = apache.*$|user = nginx ; PHP-FPM running user|" $fpmconf
@@ -191,6 +198,8 @@ composer install
 
 # Config file injection
 cp .env.example .env
+/var/www/BookStack/.env
+sed -i "s|APP_URL=.*$|APP_URL=http://${CURRENT_IP}|" .env
 sed -i "s|^DB_DATABASE=.*$|DB_DATABASE=bookstackdb|" .env
 sed -i "s|^DB_USERNAME=.*$|DB_USERNAME=bookstackuser|" .env
 sed -i "s|^DB_PASSWORD=.*$|DB_PASSWORD=bookstackpass|" .env
@@ -203,7 +212,7 @@ if [[ $lang -eq "fr" ]]; then
 fi
 
 # Generate and update APP_KEY in .env
-php artisan key:generate --force
+php artisan key:generate --no-interaction --force
 
 # Generate database tables and other settings
 php artisan migrate --force
@@ -214,8 +223,8 @@ chmod -R 755 bootstrap/cache public/uploads storage
 
 echo -e "\n\n"
 echo -e "\t * 1 * ${vert}PLEASE NOTE the MariaDB password root:${DB_ROOT} ${rescolor}"
-echo -e "\t * 2 * ${rouge}AND DELETE the file ${TMPROOTPWD} ${rescolor}"
-echo -e "\t * 3 * ${bleu}Logon http://${HOSTNAME} or http://${CURRENT_IP} -> admin@admin.com:password ${rescolor}"
+echo -e "\t * 2 * ${rouge}AND DELETE the file (or reboot) ${TMPROOTPWD} ${rescolor}"
+echo -e "\t * 3 * ${bleu}Logon http://${HOSTNAME} or http://${CURRENT_IP} \n\t\t -> with admin@admin.com and 'password' ${rescolor}"
 echo -e "\n\t${magenta} --- END OF SCRIPT (v${VERSION}) ---  \n\n\n ${rescolor}"
 
 exit 0
