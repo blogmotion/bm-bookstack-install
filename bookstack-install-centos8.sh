@@ -184,7 +184,7 @@ mkdir -p ${VARWWW}/sessions # php sessions
 git clone https://github.com/BookStackApp/BookStack.git --branch release --single-branch ${BOOKSTACK_DIR}
 
 # let composer do it's things
-cd /usr/local/bin
+cd /bin
 curl -sS https://getcomposer.org/installer | php
 mv composer.phar composer
 cd ${BOOKSTACK_DIR}
