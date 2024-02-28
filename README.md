@@ -10,8 +10,7 @@ Présentation : https://blogmotion.fr/internet/bookstack-script-installation-cen
 
 Validé sur :
 
-- Alma Linux 8.5 (x64)
-- Oracle Linux 8.5 (x64)
+- Alma Linux 8.9 (x64)
 
 
 ### 🚀 Utilisation
@@ -98,8 +97,7 @@ How to (french): https://blogmotion.fr/internet/bookstack-script-installation-ce
 
 Tested on :
 
-- Alma Linux 8.5 (x64)
-- Oracle Linux 8.5 (x64)
+- Alma Linux 8.9 (x64)
 
 ### [EN] 🚀 Usage
 Run as root (or prefix with sudo) :
