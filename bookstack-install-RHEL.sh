@@ -7,16 +7,16 @@
 # Adapted from : https://deviant.engineer/2017/02/bookstack-centos7/
 #
 #set -xe
-VERSION="2022.03.29"
+VERSION="2024.02.28"
 
 ### VARIABLES #######################################################################################################################
 VARWWW="/var/www"
 BOOKSTACK_DIR="${VARWWW}/BookStack"
 TMPROOTPWD="/tmp/DB_ROOT.delete"
 REMIRPM="https://rpms.remirepo.net/enterprise/remi-release-8.rpm"
-#CURRENT_IP=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 CURRENT_IP=$(hostname -i)
-DOMAIN=$(hostname)
+EMAIL_SENDER="$(whoami)@$(hostname -f)"
+
 blanc="\033[1;37m"; gris="\033[0;37m"; magenta="\033[0;35m"; rouge="\033[1;31m"; vert="\033[1;32m"; jaune="\033[1;33m"; bleu="\033[1;34m"; rescolor="\033[0m"
 
 
@@ -26,7 +26,7 @@ echo -e "#########################################################"
 echo -e "#                                                       #"
 echo -e "#                BookStack Installation                 #"
 echo -e "#                                                       #"
-echo -e "#         Tested on Alma, Oracle Linux 8.5 (x64)        #"
+echo -e "#         Tested on Alma, Oracle Linux 8.9 (x64)        #"
 echo -e "#                      by @xhark                        #"
 echo -e "#                                                       #"
 echo -e "###################### ${VERSION} #######################"
@@ -42,11 +42,11 @@ firewall-cmd --add-service=http --permanent && firewall-cmd --add-service=https 
 echo -e "\n${jaune}Packages installation ...${rescolor}" && sleep 1
 
 dnf -y update
+dnf -y install epel-release # (Extra Packages for Enterprise Linux)
+yum -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd																																						
 
 # Add REMI repo
 dnf -y install $REMIRPM
-dnf -y module reset php
-dnf -y module enable php:remi-7.4
 
 if [[ $? -ne 0 ]]; then
         echo -e "\t ${rouge} ERROR on Remi RPM, please check RPM URL : $REMIRPM ${rescolor}"
@@ -54,15 +54,14 @@ if [[ $? -ne 0 ]]; then
 		exit 1
 fi
 
+dnf config-manager --set-enabled powertools
+dnf -y module reset php
+dnf -y module install php:remi-8.1
+dnf --enablerepo=remi install -y php81-php-tidy php81-php-json php81-php-pecl-zip
 
-
-dnf -y install epel-release # (Extra Packages for Enterprise Linux)
-dnf -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
-
-dnf --enablerepo=remi install -y php74-php-tidy php74-php-json php74-php-pecl-zip
 
 # create symlink tidy.so and enable extension in php.ini
-ln -s /opt/remi/php74/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
+ln -s /opt/remi/php81/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
 echo "extension=tidy" >> /etc/php.ini
 
 
@@ -80,7 +79,6 @@ quit"
 # Set root password
 DB_ROOT=$(cat /dev/urandom | tr -cd 'A-Za-z0-9' | head -c 14)
 echo "MariaDB root:${DB_ROOT}" >> $TMPROOTPWD && cat $TMPROOTPWD
-# mysqladmin -u root password ${DB_ROOT}
 mysql -e "SET PASSWORD FOR root@localhost = PASSWORD('${DB_ROOT}');FLUSH PRIVILEGES;"
 
 
@@ -204,6 +202,7 @@ sed -i "s|^DB_DATABASE=.*$|DB_DATABASE=bookstackdb|" .env
 sed -i "s|^DB_USERNAME=.*$|DB_USERNAME=bookstackuser|" .env
 sed -i "s|^DB_PASSWORD=.*$|DB_PASSWORD=bookstackpass|" .env
 sed -i "s|^MAIL_PORT=.*$|MAIL_PORT=25|" .env
+sed -i "s|^MAIL_PORT=.*$|MAIL_FROM=${EMAIL_SENDER}|" .env
 
 # Set in French if locale is FR
 lang=$(locale | grep LANG | cut -d= -f2 | cut -d_ -f1)
@@ -222,9 +221,10 @@ chown -R nginx:nginx /var/www/{BookStack,sessions}
 chmod -R 755 bootstrap/cache public/uploads storage
 
 echo -e "\n\n"
+echo -e "\t       ${vert}SUCCESS ! ${rescolor}"
 echo -e "\t * 1 * ${vert}PLEASE NOTE the MariaDB password root:${DB_ROOT} ${rescolor}"
 echo -e "\t * 2 * ${rouge}AND DELETE the file (or reboot) ${TMPROOTPWD} ${rescolor}"
-echo -e "\t * 3 * ${bleu}Logon http://${HOSTNAME} or http://${CURRENT_IP} \n\t\t -> with admin@admin.com and 'password' ${rescolor}"
+echo -e "\t * 3 * ${bleu}Logon URL http://${CURRENT_IP} \n\t\t -> with admin@admin.com and 'password' ${rescolor}"
 echo -e "\n\t${magenta} --- END OF SCRIPT (v${VERSION}) ---  \n\n\n ${rescolor}"
 
 exit 0
