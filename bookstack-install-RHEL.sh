@@ -196,13 +196,12 @@ composer install
 
 # Config file injection
 cp .env.example .env
-/var/www/BookStack/.env
 sed -i "s|APP_URL=.*$|APP_URL=http://${CURRENT_IP}|" .env
 sed -i "s|^DB_DATABASE=.*$|DB_DATABASE=bookstackdb|" .env
 sed -i "s|^DB_USERNAME=.*$|DB_USERNAME=bookstackuser|" .env
 sed -i "s|^DB_PASSWORD=.*$|DB_PASSWORD=bookstackpass|" .env
 sed -i "s|^MAIL_PORT=.*$|MAIL_PORT=25|" .env
-sed -i "s|^MAIL_PORT=.*$|MAIL_FROM=${EMAIL_SENDER}|" .env
+sed -i "s|^MAIL_FROM=.*$|MAIL_FROM=${EMAIL_SENDER}|" .env
 
 # Set in French if locale is FR
 lang=$(locale | grep LANG | cut -d= -f2 | cut -d_ -f1)
