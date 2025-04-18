@@ -7,7 +7,7 @@
 # Adapted from : https://deviant.engineer/2017/02/bookstack-centos7/
 #
 #set -xe
-VERSION="2024.02.28"
+VERSION="2025.04.19"
 
 ### VARIABLES #######################################################################################################################
 VARWWW="/var/www"
@@ -24,9 +24,10 @@ blanc="\033[1;37m"; gris="\033[0;37m"; magenta="\033[0;35m"; rouge="\033[1;31m";
 echo -e "${vert}"
 echo -e "#########################################################"
 echo -e "#                                                       #"
-echo -e "#                BookStack Installation                 #"
+echo -e "#           BookStack Installation (PHP 8.3)            #"
 echo -e "#                                                       #"
-echo -e "#         Tested on Alma, Oracle Linux 8.9 (x64)        #"
+echo -e "#         Tested on Alma, Oracle Linux 8.10 (x64)       #"
+echo -e "#                                                       #"
 echo -e "#                      by @xhark                        #"
 echo -e "#                                                       #"
 echo -e "###################### ${VERSION} #######################"
@@ -54,15 +55,18 @@ if [[ $? -ne 0 ]]; then
 		exit 1
 fi
 
-dnf config-manager --set-enabled powertools
+#dnf config-manager --set-enabled powertools
 dnf -y module reset php
-dnf -y module install php:remi-8.1
-dnf --enablerepo=remi install -y php81-php-tidy php81-php-json php81-php-pecl-zip
+dnf -y module install php:remi-8.3
+dnf --enablerepo=remi install -y php83-php-tidy php83-php-json php83-php-pecl-zip 
+
 
 
 # create symlink tidy.so and enable extension in php.ini
-ln -s /opt/remi/php81/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
+ln -s /opt/remi/php83/root/usr/lib64/php/modules/tidy.so /usr/lib64/php/modules/tidy.so
+ln -s /opt/remi/php83/root/usr/lib64/php/modules/zip.so /usr/lib64/php/modules/zip.so
 echo "extension=tidy" >> /etc/php.ini
+echo "extension=zip.so" >> /etc/php.ini
 
 
 ### Database setup ###############################################################################################################
