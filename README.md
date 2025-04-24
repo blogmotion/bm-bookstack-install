@@ -6,9 +6,9 @@ bm-bookstack-install (installation auto. de BookStack)
 ### Description
 Ce script automatise l'installation de [BookStack](https://www.bookstackapp.com) sur les distributions basées sur RHEL (à vos risques et périls).
 
-Il y a un script pour **RHEL8** et un script pour **RHEL9**.
-
 Présentation : https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255
+
+Il y a un script pour **RHEL8** et un script pour **RHEL9**.
 
 Validé sur :
 
@@ -104,9 +104,10 @@ LDAP_REMOVE_FROM_GROUPS=false
 
 ### [EN] Description
 This script automates the installation of [BookStack](https://www.bookstackapp.com) on RHEL-based distributions (at your own risk).
-There is a script for RHEL8 and a script for RHEL9.
 
 How to (french): https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255)
+
+There is a script for **RHEL8** and a script for **RHEL9**.
 
 Tested on :
 
