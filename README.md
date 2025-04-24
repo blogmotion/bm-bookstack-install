@@ -6,16 +6,28 @@ bm-bookstack-install (installation auto. de BookStack)
 ### Description
 Ce script automatise l'installation de [BookStack](https://www.bookstackapp.com) sur les distributions basées sur RHEL (à vos risques et périls).
 
+Il y a un script pour **RHEL8** et un script pour **RHEL9**.
+
 Présentation : https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255
 
 Validé sur :
 
 - Alma Linux 8.10 (x64)
+- Alma Linux 9.5 (x64)
 
 
 ### 🚀 Utilisation
 En tant que root (ou via sudo) :
-```chmod +x bookstack-install-centos8.sh && ./bookstack-install-centos8.sh```
+
+
+**RHEL8** :
+
+```chmod +x bookstack-install-RHEL8.sh && ./bookstack-install-RHEL8.sh```
+
+**RHEL9** :
+
+```chmod +x bookstack-install-RHEL9.sh && ./bookstack-install-RHEL9.sh```
+
 
 ### LDAP avec Active Directory
 Extrait de fichier `.env`
@@ -91,14 +103,24 @@ LDAP_REMOVE_FROM_GROUPS=false
 ### English version
 
 ### [EN] Description
-This script automates the installation of [BookStack](https://www.bookstackapp.com), only for RedHat based distributions (at your own risk).
+This script automates the installation of [BookStack](https://www.bookstackapp.com) on RHEL-based distributions (at your own risk).
+There is a script for RHEL8 and a script for RHEL9.
 
 How to (french): https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255)
 
 Tested on :
 
 - Alma Linux 8.10 (x64)
+- Alma Linux 9.5 (x64)
 
 ### [EN] 🚀 Usage
 Run as root (or prefix with sudo) :
+
+
+**RHEL8** :
+
 ```chmod +x bookstack-install-RHEL8.sh && ./bookstack-install-RHEL8.sh```
+
+**RHEL9** :
+
+```chmod +x bookstack-install-RHEL9.sh && ./bookstack-install-RHEL9.sh```
