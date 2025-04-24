@@ -1,5 +1,5 @@
 #!/bin/bash
-# bm-bookstack-install : Installation de BookStack pour Alma Linux 8.x et Oracle Linux 8.x
+# bm-bookstack-install : BookStack installation on Alma Linux 8.x and Oracle Linux 8.x
 # License : Creative Commons http://creativecommons.org/licenses/by-nd/4.0/deed.fr
 # Website : https://blogmotion.fr/internet/bookstack-script-installation-centos-8-18255
 #
@@ -7,14 +7,14 @@
 # Adapted from : https://deviant.engineer/2017/02/bookstack-centos7/
 #
 #set -xe
-VERSION="2025.04.19"
+VERSION="2025.04.24"
 
 ### VARIABLES #######################################################################################################################
 VARWWW="/var/www"
 BOOKSTACK_DIR="${VARWWW}/BookStack"
 TMPROOTPWD="/tmp/DB_ROOT.delete"
 REMIRPM="https://rpms.remirepo.net/enterprise/remi-release-8.rpm"
-CURRENT_IP=$(hostname -i)
+CURRENT_IP=$(ip addr show $(ip route | awk '/default/ { print $5 }') | grep "inet" | head -n 1 | awk '/inet/ {print $2}' | cut -d'/' -f1)
 EMAIL_SENDER="$(whoami)@$(hostname -f)"
 
 blanc="\033[1;37m"; gris="\033[0;37m"; magenta="\033[0;35m"; rouge="\033[1;31m"; vert="\033[1;32m"; jaune="\033[1;33m"; bleu="\033[1;34m"; rescolor="\033[0m"
@@ -34,6 +34,8 @@ echo -e "###################### ${VERSION} #######################"
 echo -e "${rescolor}\n\n"
 sleep 3
 
+echo -e "\n${vert}Please confirm the IP address to use: ${rescolor}"
+read -e -i "${CURRENT_IP}" CURRENT_IP
 echo -e "\n${jaune}SELinux disable and firewall settings ...${rescolor}" && sleep 1
 sed -i s/^SELINUX=.*$/SELINUX=disabled/ /etc/selinux/config && setenforce 0
 firewall-cmd --add-service=http --permanent && firewall-cmd --add-service=https --permanent && firewall-cmd --reload
@@ -44,7 +46,7 @@ echo -e "\n${jaune}Packages installation ...${rescolor}" && sleep 1
 
 dnf -y update
 dnf -y install epel-release # (Extra Packages for Enterprise Linux)
-yum -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd																																						
+yum -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
 
 # Add REMI repo
 dnf -y install $REMIRPM
@@ -58,7 +60,7 @@ fi
 #dnf config-manager --set-enabled powertools
 dnf -y module reset php
 dnf -y module install php:remi-8.3
-dnf --enablerepo=remi install -y php83-php-tidy php83-php-json php83-php-pecl-zip 
+dnf --enablerepo=remi install -y php83-php-tidy php83-php-json php83-php-pecl-zip
 
 
 
@@ -209,7 +211,7 @@ sed -i "s|^MAIL_FROM=.*$|MAIL_FROM=${EMAIL_SENDER}|" .env
 
 # Set in French if locale is FR
 lang=$(locale | grep LANG | cut -d= -f2 | cut -d_ -f1)
-if [[ $lang -eq "fr" ]]; then
+if [[ $lang == "fr" ]]; then
 	sed -i "s|^# Application URL.*$|APP_LANG=fr\n# Application URL|" .env
 fi
 
