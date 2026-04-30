@@ -44,20 +44,44 @@ firewall-cmd --add-service=http --permanent && firewall-cmd --add-service=https 
 ### PACKAGES INSTALLATION ##########################################################################################################
 echo -e "\n${jaune}Packages installation ...${rescolor}" && sleep 1
 
+# Detect OS
+OS_ID=$(. /etc/os-release && echo $ID)
+OS_VERSION=$(. /etc/os-release && echo $VERSION_ID | cut -d. -f1)
+echo -e "\t${gris}Detected OS: $OS_ID $OS_VERSION${rescolor}"
+
 dnf -y update
-dnf -y install epel-release # (Extra Packages for Enterprise Linux)
-yum -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-openssl php-tokenizer php-mbstring php-mysqlnd
 
-# Add REMI repo
-dnf -y install $REMIRPM
-
-if [[ $? -ne 0 ]]; then
-        echo -e "\t ${rouge} ERROR on Remi RPM, please check RPM URL : $REMIRPM ${rescolor}"
-        echo -e "\t ${gris} script aborted, please restart after fix it ${rescolor}"
-		exit 1
+# Install EPEL according to distro
+if [[ "$OS_ID" == "rhel" ]]; then
+    echo -e "\t${jaune}RHEL detected: enabling CodeReady Builder and installing EPEL from Fedora...${rescolor}"
+    subscription-manager repos --enable "codeready-builder-for-rhel-8-$(arch)-rpms"
+    dnf -y install "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm"
+else
+    echo -e "\t${jaune}RHEL-clone detected: installing EPEL and enabling PowerTools...${rescolor}"
+    dnf -y install epel-release || dnf -y install "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm"
+    dnf -y install dnf-plugins-core
+    # PowerTools = CRB on EL9, powertools on EL8
+    dnf config-manager --set-enabled powertools 2>/dev/null || \
+    dnf config-manager --set-enabled crb 2>/dev/null || \
+    echo -e "\t${rouge}WARNING: PowerTools/CRB could not be enabled automatically${rescolor}"
 fi
 
-#dnf config-manager --set-enabled powertools
+if [[ $? -ne 0 ]]; then
+    echo -e "\t${rouge}ERROR installing EPEL, please check your subscription or network${rescolor}"
+    exit 1
+fi
+
+# Add REMI repo (requires EPEL to be installed first)
+dnf -y install "$REMIRPM"
+
+if [[ $? -ne 0 ]]; then
+    echo -e "\t${rouge}ERROR on Remi RPM, please check RPM URL: $REMIRPM${rescolor}"
+    echo -e "\t${gris}script aborted, please restart after fix it${rescolor}"
+    exit 1
+fi
+
+dnf -y install git unzip mariadb-server nginx php php-cli php-fpm php-json php-gd php-mysqlnd php-xml php-tokenizer php-mbstring
+
 dnf -y module reset php
 dnf -y module install php:remi-8.3
 dnf --enablerepo=remi install -y php83-php-tidy php83-php-json php83-php-pecl-zip
