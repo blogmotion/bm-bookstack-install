@@ -7,7 +7,7 @@
 # Adapted from : https://deviant.engineer/2017/02/bookstack-centos7/
 #
 #set -xe
-VERSION="2025.04.24"
+VERSION="2026.04.30"
 
 ### VARIABLES #######################################################################################################################
 VARWWW="/var/www"
@@ -53,11 +53,11 @@ dnf -y update
 
 # Install EPEL according to distro
 if [[ "$OS_ID" == "rhel" ]]; then
-    echo -e "\t${jaune}RHEL detected: enabling CodeReady Builder and installing EPEL from Fedora...${rescolor}"
+    echo -e "\n\t${jaune}RHEL detected: enabling CodeReady Builder and installing EPEL from Fedora...${rescolor}"
     subscription-manager repos --enable "codeready-builder-for-rhel-8-$(arch)-rpms"
     dnf -y install "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm"
 else
-    echo -e "\t${jaune}RHEL-clone detected: installing EPEL and enabling PowerTools...${rescolor}"
+    echo -e "\n\t${jaune}RHEL-clone detected: installing EPEL and enabling PowerTools...${rescolor}"
     dnf -y install epel-release || dnf -y install "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm"
     dnf -y install dnf-plugins-core
     # PowerTools = CRB on EL9, powertools on EL8
